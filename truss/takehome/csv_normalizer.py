@@ -42,6 +42,7 @@ and time format variants you will need to handle.
 import argparse
 import csv
 import datetime
+import io
 import sys
 
 
@@ -166,7 +167,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='CSV Normalizer')
     parser.add_argument('infile', nargs='?',
                         type=argparse.FileType('r', encoding='UTF-8', errors='replace'),
-                        default=sys.stdin)
+                        default=io.TextIOWrapper(sys.stdin.buffer, encoding='UTF-8', errors='replace'))
     parser.add_argument('outfile', nargs='?',
                         type=argparse.FileType('w', encoding='UTF-8'),
                         default=sys.stdout)
