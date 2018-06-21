@@ -6,9 +6,11 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 )
 
-func dtToISO8601Est(dt_str string) string {
+func dtToISO8601Est(dtStr string) string {
 	/*
 	   * The Timestamp column should be formatted in ISO-8601 format.
 	   * The Timestamp column should be assumed to be in US/Pacific time;
@@ -16,19 +18,19 @@ func dtToISO8601Est(dt_str string) string {
 
 	   4/1/11 11:00:00 AM
 	*/
-	// dt_obj = datetime.datetime.strptime(dt_str, '%m/%d/%y %H:%M:%S %p')
+	// dt_obj = datetime.datetime.strptime(dtStr, '%m/%d/%y %H:%M:%S %p')
 	// dt_obj = dt_obj + datetime.timedelta(hours=TZ_OFFSET)
 	// return datetime.datetime.isoformat(dt_obj)
-	return dt_str
+	return dtStr
 }
 
-func zipToFiveDigits(zip_code string) string {
+func zipToFiveDigits(zipCode string) string {
 	/*
 	   * All ZIP codes should be formatted as 5 digits. If there are less
 	     than 5 digits, assume 0 as the prefix.
 	*/
-	//return "{0:05d}".format(int(zip_code))
-	return zip_code
+	padSize := 5 - len(zipCode)
+	return strings.Repeat("0", padSize) + zipCode
 }
 
 func uppercaseNames(name string) string {
@@ -36,8 +38,7 @@ func uppercaseNames(name string) string {
 	   * All name columns should be converted to uppercase. There will be
 	     non-English names.
 	*/
-	//return name.title()
-	return name
+	return strings.Title(name)
 }
 
 func addressValidation(address string) string {
@@ -50,24 +51,29 @@ func addressValidation(address string) string {
 	return address
 }
 
-func hmsToSeconds(hms_time string) string {
+func hmsToSeconds(hmsTime string) string {
 	/*
 	   * The columns `FooDuration` and `BarDuration` are in HH:MM:SS.MS
 	     format (where MS is milliseconds); please convert them to a floating
 	     point seconds format.
 	*/
-	// hours, minutes, seconds = hms_time.split(':')
-	// return float(hours) + 3600 + float(minutes) * 60 + float(seconds)
-	return hms_time
+	time := strings.Split(hmsTime, ":")
+	hours, _ := strconv.ParseFloat(time[0], 64)
+	minutes, _ := strconv.ParseFloat(time[1], 64)
+	seconds, _ := strconv.ParseFloat(time[2], 64)
+	total := hours + 3600 + minutes * 60 + seconds
+	return strconv.FormatFloat(total, 'f', -1, 64)
 }
 
-func totalTime(foo_duration, bar_duration int) int {
+func totalTime(fooDuration, barDuration string) string {
 	/*
 	   * The column "TotalDuration" is filled with garbage data. For each
 	     row, please replace the value of TotalDuration with the sum of
 	     FooDuration and BarDuration.
 	*/
-	return foo_duration + bar_duration
+	newFoo, _ := strconv.ParseFloat(fooDuration, 64)
+	newBar, _ := strconv.ParseFloat(barDuration, 64)
+	return strconv.FormatFloat(newFoo + newBar, 'f', -1, 64)
 }
 
 func unicodeReplacement(text string) string {
@@ -122,7 +128,7 @@ func main() {
 				case "BarDuration":
 					newElement = hmsToSeconds(element)
 				case "TotalDuration":
-					newElement = unicodeReplacement(element)
+					newElement = totalTime(newRecord[4], newRecord[5])
 				case "Notes":
 					newElement = unicodeReplacement(element)
 				}
