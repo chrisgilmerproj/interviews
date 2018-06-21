@@ -62,7 +62,7 @@ func hmsToSeconds(hmsTime string) string {
 	hours, _ := strconv.ParseFloat(time[0], 64)
 	minutes, _ := strconv.ParseFloat(time[1], 64)
 	seconds, _ := strconv.ParseFloat(time[2], 64)
-	total := hours + 3600 + minutes * 60 + seconds
+	total := hours + 3600 + minutes*60 + seconds
 	return strconv.FormatFloat(total, 'f', -1, 64)
 }
 
@@ -74,7 +74,7 @@ func totalTime(fooDuration, barDuration string) string {
 	*/
 	newFoo, _ := strconv.ParseFloat(fooDuration, 64)
 	newBar, _ := strconv.ParseFloat(barDuration, 64)
-	return strconv.FormatFloat(newFoo + newBar, 'f', -1, 64)
+	return strconv.FormatFloat(newFoo+newBar, 'f', -1, 64)
 }
 
 func unicodeReplacement(text string) string {
@@ -124,6 +124,7 @@ func main() {
 				case "BarDuration":
 					newElement = hmsToSeconds(element)
 				case "TotalDuration":
+					// This works because of the order of CSV fields
 					newElement = totalTime(newRecord[4], newRecord[5])
 				case "Notes":
 					newElement = unicodeReplacement(element)
