@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func dtToISO8601Est(dtStr string) string {
@@ -18,10 +19,10 @@ func dtToISO8601Est(dtStr string) string {
 
 	   4/1/11 11:00:00 AM
 	*/
-	// dt_obj = datetime.datetime.strptime(dtStr, '%m/%d/%y %H:%M:%S %p')
-	// dt_obj = dt_obj + datetime.timedelta(hours=TZ_OFFSET)
-	// return datetime.datetime.isoformat(dt_obj)
-	return dtStr
+	PDT, _ := time.LoadLocation("America/Los_Angeles")
+	dtObj, _ := time.ParseInLocation("1/_2/06 3:04:05 PM", dtStr, PDT)
+	EST, _ := time.LoadLocation("America/New_York")
+	return dtObj.In(EST).Format(time.RFC3339)
 }
 
 func zipToFiveDigits(zipCode string) string {
@@ -87,13 +88,8 @@ func unicodeReplacement(text string) string {
 }
 
 func main() {
-	filename := "../takehome/problem_set/sample.csv"
-	csvFile, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
 	var header []string
-	r := csv.NewReader(bufio.NewReader(csvFile))
+	r := csv.NewReader(bufio.NewReader(os.Stdin))
 	w := csv.NewWriter(os.Stdout)
 	for {
 		record, err := r.Read()
